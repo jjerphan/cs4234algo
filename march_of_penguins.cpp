@@ -2,25 +2,23 @@
 
 using namespace std;
 
-typedef pair<int,int> ii;
+typedef pair<int, int> ii;
 typedef vector<int> vi;
 typedef vector<vi> vvi;
 
 
 class MaxFlow {
-    private:
-
+ private:
     class Edge {
-        public:
+     public:
         int cap;
         int orig_cap;
         int flow;
         Edge():cap(0), orig_cap(0), flow(0) {}
 
-        Edge(int _cap): cap(_cap), orig_cap(_cap), flow(0) {}
-    
-        void reset() { cap = orig_cap ; return;} 
+        explicit Edge(int _cap): cap(_cap), orig_cap(_cap), flow(0) {}
 
+        void reset() { cap = orig_cap ; return;}
     };
 
     int N;
@@ -30,14 +28,13 @@ class MaxFlow {
     int source;
     int target;
 
-    private:
 
     void push_flow(int u, int v, int flow) {
-        edges[make_pair(u,v)].flow += flow;
-        edges[make_pair(u,v)].cap -= flow;
-        
-        edges[make_pair(v,u)].flow -= flow;
-        edges[make_pair(v,u)].cap += flow;
+        edges[make_pair(u, v)].flow += flow;
+        edges[make_pair(u, v)].cap -= flow;
+
+        edges[make_pair(v, u)].flow -= flow;
+        edges[make_pair(v, u)].cap += flow;
     }
 
     // Used for Ford Fulkerson
@@ -50,16 +47,16 @@ class MaxFlow {
             return bottleneck;
         }
 
-        for(int &v: neighs[u]) {
-            if(!visited[v]) {
-                int cap_edge = edges[make_pair(u,v)].cap;
+        for (int &v: neighs[u]) {
+            if (!visited[v]) {
+                int cap_edge = edges[make_pair(u, v)].cap;
 
                 // If we can advance, we try to get a new flow
-                if(cap_edge > 0) {
+                if (cap_edge > 0) {
                     int new_flow = DFS(v, min(bottleneck, cap_edge), visited);
 
-                    if(new_flow !=0) {
-                        push_flow(u,v,new_flow);
+                    if (new_flow !=0) {
+                        push_flow(u, v, new_flow);
                         return new_flow;
                     }
                 }
@@ -69,16 +66,16 @@ class MaxFlow {
         return 0;
     }
 
-    public:
-    
-    MaxFlow(int _N):N(_N), neighs(_N, vi()), source(0), target(_N - 1) { } 
+ public:
+    explicit MaxFlow(int _N):N(_N), neighs(_N, vi()),
+    source(0), target(_N - 1) { }
 
     MaxFlow& add_edge(int u, int v, int cap) {
         neighs[u].push_back(v);
         neighs[v].push_back(u);
 
-        edges[make_pair(u,v)] = Edge(cap); 
-        edges[make_pair(v,u)] = Edge(0); 
+        edges[make_pair(u, v)] = Edge(cap);
+        edges[make_pair(v, u)] = Edge(0);
 
         return *this;
     }
@@ -86,7 +83,8 @@ class MaxFlow {
     void print_internals() {
         cout << "Edge: Flow\n";
         for(pair<const ii, Edge> & e: edges) {
-            cout << e.first.first << " → " << e.first.second << ": " << e.second.cap << "\n";
+            cout << e.first.first << " → " << e.first.second
+            << ": " << e.second.cap << "\n";
         }
         cout << "\n";
     }
@@ -94,11 +92,11 @@ class MaxFlow {
     int ford_fulkerson() {
         int max_f = 0;
         int source = 0;
-        while(1) {
-            vector<bool> visited(N,false);
+        while (1) {
+            vector<bool> visited(N, false);
             int new_flow = DFS(source, INT_MAX, visited);
 
-            if(new_flow == 0) break;
+            if (new_flow == 0) break;
 
             max_f += new_flow;
         }
@@ -110,51 +108,53 @@ class MaxFlow {
         int max_f = 0;
 
         class State {
-            public:
+         public:
             vi path;
             vector<bool> visited;
             int bottleneck;
 
-            State(int N) : visited(N, false){ };
+            explicit State(int N) : visited(N, false) { }
         };
 
         bool improvement_possible = true;
-        while(improvement_possible) {
-
+        while (improvement_possible) {
             improvement_possible = false;
             list<State > queue;
-            
+
             State st(N);
             st.path.push_back(source);
             st.bottleneck = INT_MAX;
             queue.push_back(st);
 
             // BFS
-            while(!queue.empty()) {
+            while (!queue.empty()) {
                 State state = queue.front();
                 queue.pop_front();
 
                 int u = state.path.back();
                 state.visited[u] = true;
-                
+
                 // At the end, we update the edges
                 if (u == target) {
-                    for(int i = 0; i < state.path.size()-1 ; i ++) {
-                        push_flow(state.path[i], state.path[i+1], state.bottleneck);
+                    for (int i = 0 ; i < state.path.size()-1 ; i ++) {
+                        push_flow(state.path[i], state.path[i+1],
+                        state.bottleneck);
                     }
                     max_f += state.bottleneck;
                     improvement_possible = true;
                     break;
                 }
 
-                // For each new unvisited neighs, we try to find an augmenting path
-                for(int &v: neighs[u]) {
-                    if(!state.visited[v]) {
+                // For each new unvisited neighs, we try to find an
+                // augmenting path
+                for (int &v: neighs[u]) {
+                    if (!state.visited[v]) {
                         State new_state = state;
-                        int cap_edge = edges[make_pair(u,v)].cap;
-                        if(cap_edge > 0) {
+                        int cap_edge = edges[make_pair(u, v)].cap;
+                        if (cap_edge > 0) {
                             new_state.path.push_back(v);
-                            new_state.bottleneck = min(state.bottleneck, cap_edge);
+                            new_state.bottleneck = min(state.bottleneck,
+                            cap_edge);
                             queue.push_back(new_state);
                         }
                     }
@@ -164,39 +164,42 @@ class MaxFlow {
         return max_f;
     }
 
-    int push_relabel() {
-        
+    int push_relabel(int _source, int _target) {
+
+        source = _source;
+        target = _target;
+
         // Excess on vertices
-        vi x(N,0);
+        vi x(N, 0);
         // Heights of vertices
-        vi h(N,0);
+        vi h(N, 0);
 
         h[source] = N;
 
         set<int> unbalanced;
 
         // Quick start by pushing as much as possible from the source
-        for(int &v : neighs[source]) {
-            int cap_edge = edges[make_pair(source,v)].cap;
-            if(cap_edge > 0) {
+        for (int &v : neighs[source]) {
+            int cap_edge = edges[make_pair(source, v)].cap;
+            if (cap_edge > 0) {
                 push_flow(source, v, cap_edge);
                 x[v] = cap_edge;
 
                 // Target isn't to balance
-                if(v != target)
+                if (v != target)
                     unbalanced.insert(v);
             }
         }
 
-        while(!unbalanced.empty()) {
+        while (!unbalanced.empty()) {
             set<int> new_unbalanced;
-            for(const int &u : unbalanced) {
+            for (const int &u : unbalanced) {
                 bool can_push = false;
-                
+
                 // Push
-                for(int &v : neighs[u]) {
-                    int cap_edge = edges[make_pair(u,v)].cap;
-                    if(h[u] > h[v] && cap_edge > 0) {
+                for (int &v : neighs[u]) {
+                    int cap_edge = edges[make_pair(u, v)].cap;
+                    if (h[u] > h[v] && cap_edge > 0) {
                         can_push = true;
                         int bottleneck = min(x[u], cap_edge);
                         push_flow(u, v, bottleneck);
@@ -211,10 +214,10 @@ class MaxFlow {
                 }
 
                 // Relabel
-                if(!can_push) {
+                if (!can_push) {
                     h[u]++; // simple update strategy, can be improved
                 }
-                if(x[u] > 0) {
+                if (x[u] > 0) {
                     new_unbalanced.insert(u);
                 }
             }
@@ -226,35 +229,64 @@ class MaxFlow {
 
     // Reset the graph to rerun the algorithm
     void reset() {
-        for(pair<const ii,Edge>& e: edges) {
+        for (pair<const ii, Edge>& e: edges) {
             e.second.reset();
         }
     }
-
 };
 
+struct block {
+    int x, y, peng, jump;
+};
 
 int main() {
+    int N;
+    float D;
+    cin >> N;
+    cin >> D;
 
-    int N = 4;
-    MaxFlow solver(N);
+    D = D * D;
+    block blocks[N];
+    MaxFlow solver(2*N+1);
+    int source = 2*N;
 
-    solver.add_edge(0,1,10);
-    solver.add_edge(0,2,5);
-    solver.add_edge(1,3,7);
-    solver.add_edge(2,3,8);
+    int n_peng = 0;
+    for (int n = 0 ; n < N ; n++) {
+        cin >> blocks[n].x;
+        cin >> blocks[n].y;
+        cin >> blocks[n].peng;
+        cin >> blocks[n].jump;
+        if (blocks[n].peng > 0)
+            solver.add_edge(source, n, blocks[n].peng);
 
-    cout << "Ford Fulkerson:" << solver.ford_fulkerson() << "\n";
-    solver.print_internals();
-    solver.reset();
+        solver.add_edge(n, n + N, blocks[n].jump);
+        n_peng +=  blocks[n].peng;
+    }
 
-    cout << "Edmonds Karp:" << solver.edmonds_karp() << "\n";
-    solver.print_internals();
-    solver.reset();
+    for (int i = 0 ; i < N ; i ++) {
+        for (int j = i+1 ; j < N ; j ++) {
+            int diff_x = blocks[i].x - blocks[j].x;
+            int diff_y = blocks[i].y - blocks[j].y;
+            if (diff_x * diff_x + diff_y * diff_y <= D) {
+                // cout << "Jump from " << i << " to " << j << " possible\n";
+                solver.add_edge(N + j, i, 10000000);
+                solver.add_edge(N + i, j, 10000000);
+            }
+        }
+    }
 
-    cout << "Push Relabel:" << solver.push_relabel() << "\n";
-    solver.print_internals();
-    solver.reset();
-    
+    bool possible = false;
+    for(int i = 0; i < N ; i++) {
+        solver.reset();
+        int max_flow = solver.push_relabel(source, i);
+        // cout << max_flow << "\n";
+        if(n_peng == max_flow) {
+            possible = true;
+            cout << i << " ";
+        }
+    }
+    if(!possible)
+        cout << "-1";
+    cout << "\n";
     return 0;
 }
