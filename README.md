@@ -4,7 +4,7 @@ Kattis and UVa MaxFlow and Graph Matching problems
 ## ✅   Internet Bandwidth
 **Idea**: Trivial problem if applying max flow, simply build graph as described and run max flow on it
 
-## Clever Naming Pattern
+## ✅ Clever Naming Pattern
 
 ### Type: Two Layers of Bipartite Matching
 
@@ -15,7 +15,7 @@ Kattis and UVa MaxFlow and Graph Matching problems
 - Find word in vector with that letter
 - sort words and output
 
-## The Programmers
+## ✅ The Programmers
 - For each programmer and site add vertex
 - Add edge from source to all programmers with capacity 1
 - Add edge from site to sink with capacity C
