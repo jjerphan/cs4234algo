@@ -1,7 +1,8 @@
 Kattis and UVa MaxFlow and Graph Matching problems
 ==================================================
 
-## Internet Bandwidth
+## ✅   Internet Bandwidth
+**Idea**: Trivial problem if applying max flow, simply build graph as described and run max flow on it
 
 ## Clever Naming Pattern
 
@@ -136,3 +137,16 @@ Victory times is when max flow == number of ennemies planets.
 ### Type: ASSP with Maxflow
 
 **Idea**: for each block compute the path length to the placeholders. Construct bipartite graph with boxes on the left, placeholders on the right with distance negated as edge capacities. Then run Min Weighted Bipartite matching to match to closes. Re-negated if needed.
+
+## 11167 - Monkeys in the Emei Mountain
+
+**Idea**: Decision problem can be solved using max flow with the following modelling:
+- Add vertice for each monkey with flow from source to monkey of v
+- For all overlapping intervals combine it into one meaning
+    - Add outgoing flow from overlapping interval to sink with capacity m * (start-end)
+    - For each monkey assosiated that can drink in the interval add edge from monkey to interval with capacity (start-end)
+- Run max flow on the graph, it is solveable if max flow is the same as the sum of all monkey's thrist.
+
+For outputting an assignment i have tried the following heuristic (failed - Wrong Answer):
+- For each max flow assignment of monkeys to an interval 
+    - greedily allocate them a time slot to drink by taking the m monkey(s) that need to drink the most before the end of the interval
