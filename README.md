@@ -31,7 +31,19 @@ Kattis and UVa MaxFlow and Graph Matching problems
 **Idea**: represents blocks as vertices with capacity for the number of jumps that can be performed. Link source to blocks with the number of penguins as capacities. Compute distance between blocks and link them with infinite capacity if jumping from one to the other is possible. Then perform `n` MaxFlow on each block as target to know if penguins can reach this one. Save and then print the one that are reachable.
 
 
-## 🤔 Avoiding the Apocalypse
+## ✅   Avoiding the Apocalypse
+
+**Idea**: Model the problem like the following:
+- split each node in the graph up into S levels
+    - except for source node and medical facilities
+- here level represents being able to get there within a certain time period.
+- For each medical facility add edge to sink with infinite capacity
+- From the source add edges to all neighbors at levels greater or equal to the time it takes to cross the road
+    - except if endpoint is hospital, in which case we increase the max flow value by (s - t) * p
+- Recursively for each neighbour in the previous step
+    - add edge to next level with infinite capacity, and recurse on that node
+    - add edge to neighbours if the current time + the time it takes to reach the node is less than threshold, and recurse on neighbor
+- output max flow
 
 ## ✅ Transportation Deleguation
 
