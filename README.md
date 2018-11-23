@@ -233,11 +233,24 @@ Run MaxFlow and get the assignment.
 
 ------------------------
 
-## Piano
+## ✅ Piano
+
+### Type: 2 phases Decision problem with Max flow
+
+**Idea**: the problem can be broken down in two pieces:
+ - is it possible to only work on week-days?
+ - if not, is it then possible with working on week-ends as well
+
+Hence, construct a graph with source to piano, piano to given week days
+then days to source. If max flow == n then "fine".
+
+Else add week-ends and if maxflow == n then "weekend work" else "serious trouble".
 
 ------------------------
 
 ## Nuts and Bolts
+
+### Type : complete implementation of an algorithm
 
 ------------------------
 
@@ -251,8 +264,19 @@ Run MaxFlow and get the assignment.
 
 ## Sorting Slides
 
-------------------------
+### Type: Mix of decision problem with MawFlow
 
+**Implementation to finish**
+
+**Idea**:
+Bipartite Graph between slides and numbers. Unit edge if number is in the slide.
+If MCBM != N, not possible.
+Save the matching.
+Then try to find the unique isomorphism by removing one matched edge at the
+time. If the MBCM does not decrease monotically then not possible.
+Else print the isomorphism.
+
+------------------------
 
 ## Ware House
 

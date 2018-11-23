@@ -16,9 +16,9 @@ struct Dinic {
 	vector<vector<Edge> > G;
 	vector<Edge *> dad;
 	vector<int> Q;
-	
+
 	Dinic(int N) : N(N), G(N), dad(N), Q(N) {}
-	
+
 	void AddEdge(int from, int to, int cap) {
 		G[from].push_back(Edge(from, to, cap, 0, G[to].size()));
 		if (from == to) G[from].back().index++;
@@ -28,7 +28,7 @@ struct Dinic {
 	long long BlockingFlow(int s, int t) {
 		fill(dad.begin(), dad.end(), (Edge *) NULL);
 		dad[s] = &G[0][0] - 1;
-		
+
 		int head = 0, tail = 0;
 		Q[tail++] = s;
 		while (head < tail) {
@@ -77,7 +77,7 @@ int main(){
 	ios_base::sync_with_stdio(false);
 	size_t N,M, cno = 1;
 	while(cin >> N , N > 0){
-		vector<ii> intervals, t_ape; 
+		vector<ii> intervals, t_ape;
 		set<int> cur;
 		int vsum = 0, s = N*3, t = s + 1;
 		Dinic mf(t + 1);
@@ -95,7 +95,7 @@ int main(){
 		for(ii q : t_ape){ // For each start/stop time in order
 			if(p.first < q.first){
 				int delta = q.first - p.first, j = N + intervals.size();
-				for(int id : cur) 
+				for(int id : cur)
 					mf.AddEdge(id, j, delta);
 				mf.AddEdge(j, t, delta*M);
 				intervals.push_back(ii(p.first, q.first));

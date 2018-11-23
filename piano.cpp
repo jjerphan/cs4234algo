@@ -1,4 +1,4 @@
-// https://open.kattis.com/problems/risk
+//https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=2108
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -69,65 +69,64 @@ struct Dinic {
 	}
 };
 
-string &findStartLetter(vector<string> words, char letter){
-	for(string &word : words)
-		if(word.at(0) == letter)
-			return word;
-	return words[0];
-}
+typedef pair<int,int> ii;
 
-int armies[105];
+bool pair_desc(ii p1, ii p2){return p1.first > p2.first;}
 
 int main(){
 	ios_base::sync_with_stdio(false);
-	int T, R;
+	int T;
+	int N, P;
 	cin >> T;
+	int nb_days = 100;
 
 	while(T--) {
-		cin >> R;
-		vector<vector<int > > neighs(R);
-		unordered_set<int > enemy_regions;
-		for(int r = 0 ; r < R; r ++) {
-			cin >> armies[r];
-			if (armies[r] == 0) {
-				enemy_regions.insert(r);
+		cin >> N >> P;
+		P /= 2; // lifters work in pairs
+		Dinic mf(nb_days + N + 2);
+		int s = nb_days + N, t = nb_days + N + 1;
+		int first_day = nb_days, last_day = 0;
+		int beg, end;
+
+		// Linking pianos
+		for(int i = 0 ; i < N ; i ++) {
+			cin >> beg >> end;
+			mf.AddEdge(s, i, 1);
+			first_day = min(first_day, beg);
+			last_day = max(last_day, end);
+			for (int j = beg; j < end + 1 ; j++)
+				mf.AddEdge(i, j + N - 1, 1);
+		}
+
+		// Week days to sink
+		for (int i = first_day; i < last_day + 1 ; i++) {
+			if((i % 7) != 0 & (i % 6) != 0) {
+				mf.AddEdge(i + N - 1, t, P);
 			}
 		}
 
-		char temp;
-		for(int i = 0; i < R ; i++) {
-			for(int j = 0; j < R ; j++) {
-				cin >> temp;
-				if(temp == 'Y') {
-					neighs[i].push_back(j);
-					neighs[j].push_back(i);
-				}
+		int max_flow = mf.GetMaxFlow(s,t);
+		if (max_flow == N) {
+			cout << "fine" << endl;
+			continue;
+		}
+
+		// If not possible, add week-ends
+		for (int i = first_day; i < last_day + 1 ; i++) {
+			if((i % 7) == 0 || (i % 6) == 0) {
+				mf.AddEdge(i + N - 1, t, P);
 			}
 		}
 
-		// Identify weakest
-		int weakest = -1;
-		int armies_weakest = 1000;
-		for(const int en_reg: enemy_regions) {
-			for(const int in_danger: neighs[en_reg]) {
-				if (armies[in_danger] > 0 && armies[in_danger] < armies_weakest) {
-					weakest = in_danger;
-					armies_weakest = armies[weakest];
-				}
-			}
+		// Adding the new flow
+		max_flow += mf.GetMaxFlow(s,t);
+		if (max_flow == N) {
+			cout << "weekend work" << endl;
+		} else {
+			cout << "serious trouble" << endl;
 		}
 
-		Dinic mf(2 + neighs[weakest].size());
-		int source =  neighs[weakest].size();
-		int target = source + 1;
-
-		for (const int u: neighs[weakest]) {
-			if (armies[u] > 1) {
-				mf.AddEdge(source, u, armies[u] - 1);
-				mf.AddEdge(u, target, armies[u] - 1);
-			}
-		}
-		cout << armies[weakest] + mf.GetMaxFlow(source, target) << endl;
 	}
+
 	return 0;
 }

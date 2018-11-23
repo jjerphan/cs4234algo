@@ -1,4 +1,4 @@
-// https://open.kattis.com/problems/risk
+//https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=2108
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -69,65 +69,94 @@ struct Dinic {
 	}
 };
 
-string &findStartLetter(vector<string> words, char letter){
-	for(string &word : words)
-		if(word.at(0) == letter)
-			return word;
-	return words[0];
-}
+typedef pair<int,int> ii;
 
-int armies[105];
+bool pair_desc(ii p1, ii p2){return p1.first > p2.first;}
+
+struct slide {
+	int x_max, x_min, y_max, y_min;
+
+	bool in_slide(int x, int y) {
+		return x_min <= x && x <= x_max && y_min < y && y < y_max;
+	}
+};
+
+slide slides[10000];
 
 int main(){
 	ios_base::sync_with_stdio(false);
-	int T, R;
-	cin >> T;
+	int T;
+	int N, P;
+	int c = 0;
+	while(1) {
+		cin >> N;
+		if (N == 0) {
+			return 0;
+		}
+		cout << "Heap " << ++c << endl;
+		Dinic dinic(N*2 + 2);
+		int s = 2 * N;
+		int t = s + 1;
 
-	while(T--) {
-		cin >> R;
-		vector<vector<int > > neighs(R);
-		unordered_set<int > enemy_regions;
-		for(int r = 0 ; r < R; r ++) {
-			cin >> armies[r];
-			if (armies[r] == 0) {
-				enemy_regions.insert(r);
-			}
+		list<ii > all_edges;
+		for (int n = 0 ; n < N; n++) {
+			cin >> slides[n].x_min;
+			cin >> slides[n].x_max;
+			cin >> slides[n].y_min;
+			cin >> slides[n].y_max;
+			all_edges.push(ii(s, n));
+			all_edges.push(ii(n+N, t));
+			dinic.AddEdge(s, n, 1);
+			dinic.AddEdge(n+N, t, 1);
 		}
 
-		char temp;
-		for(int i = 0; i < R ; i++) {
-			for(int j = 0; j < R ; j++) {
-				cin >> temp;
-				if(temp == 'Y') {
-					neighs[i].push_back(j);
-					neighs[j].push_back(i);
+		int x,y;
+		for (int n = 0; n < N ; n++) {
+			cin >> x >> y;
+			for (int i = 0 ; i < N; i++) {
+				if(slides[i].in_slide(x, y)) {
+					all_edges.push(ii(i, n + N))
+					dinic.AddEdge(i, n + N, 1);
 				}
 			}
 		}
 
-		// Identify weakest
-		int weakest = -1;
-		int armies_weakest = 1000;
-		for(const int en_reg: enemy_regions) {
-			for(const int in_danger: neighs[en_reg]) {
-				if (armies[in_danger] > 0 && armies[in_danger] < armies_weakest) {
-					weakest = in_danger;
-					armies_weakest = armies[weakest];
+		if (dinic.GetMaxFlow(s,t) != N) {
+			cout << "none" << endl;
+			continue;
+		}
+
+
+		list<ii > matched_edges;
+		for(int m = N ; m >= 0 ; m--) {
+			for(int i = 0; i < N ; i++) {
+				for(Edge & e : dinic.G[i]) {
+					if(e.flow == 1) {
+						matched_edges.push_back(ii(i,e.to));
+					}
 				}
 			}
 		}
 
-		Dinic mf(2 + neighs[weakest].size());
-		int source =  neighs[weakest].size();
-		int target = source + 1;
+		unordered_set<ii > removed;
+		while(!matched_edges.empty())) {
+			removed.insert(matched_edges.front);
+			matched_edges.pop_front();
+			Dinic dinic(N*2 + 2);
 
-		for (const int u: neighs[weakest]) {
-			if (armies[u] > 1) {
-				mf.AddEdge(source, u, armies[u] - 1);
-				mf.AddEdge(u, target, armies[u] - 1);
-			}
 		}
-		cout << armies[weakest] + mf.GetMaxFlow(source, target) << endl;
+
+
+		for(int i = 0 ; i < edges.size(); i++) {
+			char slide = 'A' + edges[i].first;
+			int number = edges[i].second + 1 - N;
+			cout << "(" << slide << "," << number << ") ";
+		}
+
+
+
+		cout << endl <<endl;
 	}
+
 	return 0;
 }
