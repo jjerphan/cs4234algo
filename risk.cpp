@@ -1,4 +1,4 @@
-//https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=26&page=show_problem&problem=2413
+https://open.kattis.com/problems/risk
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -69,21 +69,65 @@ struct Dinic {
 	}
 };
 
+string &findStartLetter(vector<string> words, char letter){
+	for(string &word : words)
+		if(word.at(0) == letter)
+			return word;
+	return words[0];
+}
+
+int armies[105];
+
 int main(){
 	ios_base::sync_with_stdio(false);
-	int n, P, S, C, m;
-	cin >> n;
-	while(n--){
-		cin >> P >> S >> C >> m;
-		int s = P + S, t = s + 1;
-		Dinic mf(t+1);
-		for(int p = 0; p < P; p++) mf.AddEdge(s, p, 1);
-		for(int s = 0; s < S; s++) mf.AddEdge(P+s, t, C);
-		while(m--){
-			int p, s;
-			cin >> p >> s;
-			mf.AddEdge(--p, P+--s, 42);
+	int T, R;
+	cin >> T;
+
+	while(T--) {
+		cin >> R;
+		vector<vector<int > > neighs(R);
+		unordered_set<int > enemy_regions;
+		for(int r = 0 ; r < R; r ++) {
+			cin >> armies[r];
+			if (armies[r] == 0) {
+				enemy_regions.insert(r);
+			}
 		}
-		cout << mf.GetMaxFlow(s,t) << endl;
+
+		char temp;
+		for(int i = 0; i < N ; i++) {
+			for(int j = 0; j < N ; j++) {
+				cin >> temp;
+				if(temp == Y) {
+					neighs[i].push_back(j);
+					neighs[j].push_back(i);
+				}
+			}
+		}
+
+		// Identify weakest
+		int weakest = -1;
+		int armies_weakest = 1000;
+		for(const int en_reg: enemy_regions) {
+			for(const int in_danger: neighs[en_reg]) {
+				if (armies[in_danger] > 0 && armies[in_danger] < armies_weakest) {
+					weakest = in_danger;
+					armies_weakest = armies[weakest];
+				}
+			}
+		}
+
+		Dinic mf(3 + neights[weakest].size());
+		mf.AddEdge(s, i, 1);
+		mf.AddEdge(n+i, t, 1);
+		mf.GetMaxFlow(s, t);
+
+
+		for (const int u: neights[weakest]) {
+
+
+		}
+
 	}
+	return 0;
 }
