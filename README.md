@@ -205,34 +205,6 @@ Run MaxFlow and get the assignment.
 
 ------------------------
 
-## Risk
-
-------------------------
-
-## Duopoly
-
-------------------------
-
-## Crimewave
-
-------------------------
-
-## Power Transmission
-
-------------------------
-
-## Data flow
-
-------------------------
-
-## It's all about the Bandwidth
-
-------------------------
-
-## Coyst
-
-------------------------
-
 ## ✅ Piano
 
 ### Type: 2 phases Decision problem with Max flow
@@ -248,17 +220,18 @@ Else add week-ends and if maxflow == n then "weekend work" else "serious trouble
 
 ------------------------
 
-## Nuts and Bolts
-
-### Type : complete implementation of an algorithm
-
-------------------------
-
-## Attacking rooks
-
-------------------------
-
 ## Elementary Math
+
+### Type: Decision problem with MCBM with constructing info with final matching.
+
+**Idea**:
+Simple and interesting problem: connect pair of number to source.
+For each pair of number, connect each of the 3 edges (one for each operation)
+to the results. Result to source with capacity.
+
+Run Maxflow, and print the matching from the source and print as indicated.
+
+It the MaxFlow is not complete, output "Impossible".
 
 ------------------------
 
@@ -277,12 +250,80 @@ time. If the MBCM does not decrease monotically then not possible.
 Else print the isomorphism.
 
 ------------------------
+## Bilateral
 
-## Ware House
+### Type: Direct application of König's Theorem
+
+Run MCBM with the friend and without the friend. If the MVC is smaller in the
+latter case, then the friend is needed in the cover.
+
+To print the MVC, just use the construction given by Konig's theorem:
+ - https://en.wikipedia.org/wiki/K%C5%91nig's_theorem_(graph_theory)#Proof
+
+------------------------
+
+## Nuts and Bolts
+
+### Type : complete implementation of an algorithm
+
+------------------------
+
+## Attacking rooks
+
+### Type: MCBM
+
+**Idea**: construct a bipartite graph that model the access between rows and
+columns. The idea is that some parts of rows don't have access to some parts of
+columns. This way if we link the parts that are overlapping together, we can
+by finding a matching between them reserve them a spot for the rook.
+This way we are sure that no other rook will be on the same part of the row
+and the same part of the column.
+
+------------------------
+
+## Duopoly
+
+### Type: Max Weighted Independance Set
+
+**Idea**:
+
+Build vertex-weighted bipartite graph as follows:
+ - node as bid (register channels taken, and amount)
+ - source to first company bids, second company bids to target ;
+ their amount as edge weights
+ - link bid between each other if they share the same channel
+ - run Maxflow to get MWVC and substract the sum of bid to get MWIS
+
+
+------------------------
+
+## Crimewave
+
+------------------------
+
+## Power Transmission
+
+### Type: Max flow with vertex capacity and multiple source and sink
+
+------------------------
+
+## Risk
+
+------------------------
+
+## Data flow
+
+------------------------
+
+## It's all about the Bandwidth
+
+------------------------
+
+## Coyst
 
 ------------------------
 
 
-## Bileteral
+## Ware House
 
 ------------------------
