@@ -140,6 +140,7 @@ If, for one planet `(prod_rate_ship - prod_rate_mammoth) < 0` or `(prod_rate_shi
 Victory times is when `max flow == number of ennemies planets`.
 
 ------------------------
+## Ware House
 
 ### Type: ASSP with Maxflow
 
@@ -298,20 +299,15 @@ Vertex capacities as indicated on the map. The min-cut is the number of army to 
 
 ------------------------
 
-## Nuts and Bolts
-
-### Type : complete implementation of an algorithm
-
-------------------------
-
-## Power Transmission
+## ✅ Power Transmission
 
 ### Type: Max flow with vertex capacity and multiple source and sink
 
 ------------------------
 
-## Crimewave
+## ✅ Crimewave
 
+### Type: PSA4
 ------------------------
 
 ## Risk
@@ -327,10 +323,5 @@ Vertex capacities as indicated on the map. The min-cut is the number of army to 
 ------------------------
 
 ## Coyst
-
-------------------------
-
-
-## Ware House
 
 ------------------------

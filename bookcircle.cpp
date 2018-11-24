@@ -1,3 +1,4 @@
+//https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=2108
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -68,41 +69,45 @@ struct Dinic {
 	}
 };
 
+typedef pair<int,int> ii;
 
-int main() {
-    int L, R;
-    cin >> L >> R;
+int main(){
+	int B, G;
+	map<string, vector<int >> book_owners;
+	string name;
+	cin >> B >> G;
+	int N = B + G;
+	Dinic dinic(N + 2);
+	int s = N;
+	int t = N + 1;
 
-    int N = L + R;
-    int source = N;
-    int target = N + 1;
+	int books;
+	for(int i = 0; i < B; i++) {
+		cin >> name;
+		cin >> books;
+		dinic.AddEdge(s, i, 1);
+		for(int b = 0; b < books ; b++) {
+			cin >> name;
+			book_owners[name].push_back(i);
+		}
+	}
 
-    Dinic solver(L + R + 2);
+	for(int i = 0; i < G; i++) {
+		cin >> name;
+		cin >> books;
+		dinic.AddEdge(i + B, t, 1);
+		for(int b = 0; b < books ; b++) {
+			cin >> name;
+			book_owners[name].push_back(i+B);
+		}
+	}
 
-    for (int i = 0; i < L ; i ++) {
-        for (int j = L; j < N ; j++) {
-            solver.AddEdge(i, j, 1);
-        }
-    }
-
-    int w = 0;
-    int sum_w = 0;
-    for (int i = 0 ; i < L ; i++) {
-        cin >> w;
-        sum_w += w;
-        solver.AddEdge(source, i, w);
-    }
-
-    for (int i = L ; i < N ; i++) {
-        cin >> w;
-        solver.AddEdge(i, target, w);
-    }
-
-    if (solver.GetMaxFlow(source, target) == sum_w) {
-        cout << "Yes\n";
-    } else {
-        cout << "No\n";
-    }
-
-    return 0;
+	for (pair<string, vector<int > > p: book_owners) {
+		vector<int > & links = p.second;
+		if(links.size() == 2) {
+			dinic.AddEdge(links[0], links[1], 1);
+		}
+	}
+	cout << dinic.GetMaxFlow(s,t) << endl;
+	return 0;
 }

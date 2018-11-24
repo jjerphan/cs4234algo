@@ -70,39 +70,36 @@ struct Dinic {
 
 
 int main() {
-    int L, R;
-    cin >> L >> R;
-
-    int N = L + R;
-    int source = N;
-    int target = N + 1;
-
-    Dinic solver(L + R + 2);
-
-    for (int i = 0; i < L ; i ++) {
-        for (int j = L; j < N ; j++) {
-            solver.AddEdge(i, j, 1);
-        }
-    }
-
-    int w = 0;
-    int sum_w = 0;
-    for (int i = 0 ; i < L ; i++) {
-        cin >> w;
-        sum_w += w;
-        solver.AddEdge(source, i, w);
-    }
-
-    for (int i = L ; i < N ; i++) {
-        cin >> w;
-        solver.AddEdge(i, target, w);
-    }
-
-    if (solver.GetMaxFlow(source, target) == sum_w) {
-        cout << "Yes\n";
-    } else {
-        cout << "No\n";
-    }
-
+	int N, M, B, D;
+	while(cin >> N) {
+		Dinic dinic(2 * N + 2);
+		int source = 2 * N;
+		int target = 2 * N + 1;
+		int c;
+		for (int i = 0 ; i < N ; i++) {
+			cin >> c;
+			dinic.AddEdge(i, i + N, c);
+		}
+		cin >> M;
+		int a, b;
+		for (int i = 0 ; i < M ; i++) {
+			cin >> a >> b >> c;
+			a--;
+			b--;
+			dinic.AddEdge(a + N, b, c);
+		}
+		cin >> B >> D;
+		for (int i = 0 ; i < B ; i++) {
+			cin >> a;
+			a--;
+			dinic.AddEdge(source, a, INF);
+		}
+		for (int i = 0 ; i < D ; i++) {
+			cin >> a;
+			a--;
+			dinic.AddEdge(a + N, target, INF);
+		}
+		cout << dinic.GetMaxFlow(source, target) << endl;
+	}
     return 0;
 }

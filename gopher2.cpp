@@ -68,41 +68,59 @@ struct Dinic {
 	}
 };
 
+typedef pair<int, int > ii;
 
+
+struct pos {
+    float x, y;
+};
+
+pos gophers[100];
+pos holes[100];
+
+
+int case_n = 0;
 int main() {
-    int L, R;
-    cin >> L >> R;
+	int n, m, s, v;
+	while(cin >> n) {
+	    cin >> m >> s >> v;
 
-    int N = L + R;
-    int source = N;
-    int target = N + 1;
+	 	for (int i = 0; i < n; i++) {
+	        cin >> gophers[i].x;
+	        cin >> gophers[i].y;
+	    }
 
-    Dinic solver(L + R + 2);
+	    for (int i = 0; i < m; i++) {
+	        cin >> holes[i].x;
+	        cin >> holes[i].y;
+	    }
+		Dinic solver(n + m + 2);
+		int source = n + m;
+		int target = source + 1;
 
-    for (int i = 0; i < L ; i ++) {
-        for (int j = L; j < N ; j++) {
-            solver.AddEdge(i, j, 1);
-        }
-    }
+	    // Computing second needed per pair
+	    for (int robot = 0; robot < n; robot++) {
+	        for (int hole = 0; hole < m; hole++) {
+	            float diff_x = gophers[robot].x - holes[hole].x;
+	            float diff_y = gophers[robot].y - holes[hole].y;
+	            float dist = sqrt(diff_x * diff_x + diff_y * diff_y);
+	            float sec_needed = dist / v;
+				if (sec_needed <= s) {
+		            solver.AddEdge(robot, hole + n, 1);
+				}
+	        }
+	    }
 
-    int w = 0;
-    int sum_w = 0;
-    for (int i = 0 ; i < L ; i++) {
-        cin >> w;
-        sum_w += w;
-        solver.AddEdge(source, i, w);
-    }
+	    for (int i = 0; i < n; i++) {
+	        solver.AddEdge(source, i, 1);
+	    }
 
-    for (int i = L ; i < N ; i++) {
-        cin >> w;
-        solver.AddEdge(i, target, w);
-    }
 
-    if (solver.GetMaxFlow(source, target) == sum_w) {
-        cout << "Yes\n";
-    } else {
-        cout << "No\n";
-    }
+	    for (int i = 0; i < m; i++) {
+	        solver.AddEdge(i + n, target, 1);
+	    }
 
+	    cout <<  n - solver.GetMaxFlow(source, target) << endl;
+	}
     return 0;
 }
