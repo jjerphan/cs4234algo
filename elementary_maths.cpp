@@ -90,14 +90,14 @@ class index_mapping {
 private:
     map<ll, int> ans_index;
     map<int, ll> index_ans;
-    unordered_set<int > ans;
+    unordered_set<ll > ans;
     int N;
 
 public:
 
     explicit index_mapping(int N): N(N) {}
 
-    void add_ans(int i) {
+    void add_ans(ll i) {
         if(ans.find(i) == ans.end()) {
             // cout << "inserting " << i << endl;
             ans_index[i] = ans.size() + N;

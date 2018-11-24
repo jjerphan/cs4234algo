@@ -68,76 +68,56 @@ struct Dinic {
 	}
 };
 
-struct ride {
-    int begin;
-    int end;
-    int beg_x;
-    int beg_y;
-    int end_x;
-    int end_y;
-};
+int X, Y;
 
-void resolve_case() {
-    int N;
-
-    cin >> N;
-
-    vector<ride > rides(N);
-
-    Dinic solver(2 + 2 * N);
-    int source = 0;
-    int target = 1 + 2 * N;
-
-    // Computing info of rides
-    char osef;  // buffer for ":"
-    int hour, min;
-    int time_spent;
-    for (int n = 0 ; n < N ; n++) {
-        cin >> hour;
-        cin >> osef;
-        cin >> min;
-        cin >> rides[n].beg_x;
-        cin >> rides[n].beg_y;
-        cin >> rides[n].end_x;
-        cin >> rides[n].end_y;
-
-        // Time of the ride
-        time_spent =  abs(rides[n].beg_x - rides[n].end_x);
-        time_spent += abs(rides[n].beg_y - rides[n].end_y);
-
-        rides[n].begin = hour * 60 + min;
-        rides[n].end = rides[n].begin + time_spent;
-
-        solver.AddEdge(source, n + 1, 1);
-        solver.AddEdge(n + 1 + N, target, 1);
-    }
-
-    // Linking rides if it's possible
-    for (int i = 0; i < N ; i++) {
-        for (int j = 0 ; j < N ; j++) {
-            if (i != j) {
-                // Transit time
-                time_spent =  abs(rides[j].beg_x - rides[i].end_x);
-                time_spent += abs(rides[j].beg_y - rides[i].end_y);
-
-                if (rides[i].end + time_spent < rides[j].begin) {
-                    solver.AddEdge(1 + i, 1 + j + N, 1);
-                }
-            }
-        }
-    }
-
-    cout << N - solver.GetMaxFlow(source, target) << "\n";
+int id(int x, int y) {
+	return y + Y * x;
 }
 
 int main() {
-    int T;
-    cin >> T;
 
-    for (int t = 0 ; t < T; t++) {
-        resolve_case();
-    }
+	// X : rows, Y : cols
+	cin >> X >> Y;
 
+	// Vertex capacity
+	Dinic solver(2 * X * Y + 1);
+	int border = 2 * X * Y;
+
+	int cap;
+	for(int x = 0 ; x < X ; x++) {
+		for(int y = 0 ; y < Y ; y++) {
+			cin >> cap;
+			int in = id(x, y);
+			int out = in + X * Y;
+
+			solver.AddEdge(in, out, cap);
+			if (x == 0 || y == 0 || x == X - 1 || y == Y - 1) {
+				solver.AddEdge(out, border, INF);
+			}
+
+			if (x > 0) {
+				solver.AddEdge(out, id(x - 1, y), INF);
+			}
+
+			if (x < X - 1) {
+				solver.AddEdge(out, id(x + 1, y), INF);
+			}
+
+			if (y > 0) {
+				solver.AddEdge(out, id(x, y - 1), INF);
+			}
+
+			if (y < Y - 1) {
+				solver.AddEdge(out, id(x, y + 1), INF);
+			}
+		}
+	}
+
+	int a, b;
+	cin >> a >> b;
+	int castle = id(a, b);
+
+	cout << solver.GetMaxFlow(castle, border) << endl;
 
     return 0;
 }

@@ -69,13 +69,6 @@ struct Dinic {
 	}
 };
 
-string &findStartLetter(vector<string> words, char letter){
-	for(string &word : words)
-		if(word.at(0) == letter)
-			return word;
-	return words[0];
-}
-
 int armies[105];
 
 int main(){

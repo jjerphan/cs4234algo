@@ -51,7 +51,7 @@ Kattis and UVa MaxFlow and Graph Matching problems
 
 ------------------------
 
-## ✅   Avoiding the Apocalypse
+## ✅ Avoiding the Apocalypse
 
 **Idea**: Model the problem like the following:
 - split each node in the graph up into S levels
@@ -220,7 +220,7 @@ Else add week-ends and if maxflow == n then "weekend work" else "serious trouble
 
 ------------------------
 
-## Elementary Math
+## ✅ Elementary Math
 
 ### Type: Decision problem with MCBM with constructing info with final matching.
 
@@ -262,12 +262,6 @@ To print the MVC, just use the construction given by Konig's theorem:
 
 ------------------------
 
-## Nuts and Bolts
-
-### Type : complete implementation of an algorithm
-
-------------------------
-
 ## Attacking rooks
 
 ### Type: MCBM
@@ -281,7 +275,7 @@ and the same part of the column.
 
 ------------------------
 
-## Duopoly
+## ✅ Duopoly
 
 ### Type: Max Weighted Independance Set
 
@@ -294,16 +288,29 @@ Build vertex-weighted bipartite graph as follows:
  - link bid between each other if they share the same channel
  - run Maxflow to get MWVC and substract the sum of bid to get MWIS
 
+## ✅ The King of the North
+
+### Type: Min Cut with vertex Capacity.
+
+**Idea**: Castle is the source, each position is connected to neighbours with
+infinite capacity. Position at the border are connected to the sink.
+Vertex capacities as indicated on the map. The min-cut is the number of army to use.
 
 ------------------------
 
-## Crimewave
+## Nuts and Bolts
+
+### Type : complete implementation of an algorithm
 
 ------------------------
 
 ## Power Transmission
 
 ### Type: Max flow with vertex capacity and multiple source and sink
+
+------------------------
+
+## Crimewave
 
 ------------------------
 
