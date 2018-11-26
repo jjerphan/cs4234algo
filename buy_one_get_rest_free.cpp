@@ -171,7 +171,7 @@ void resolve_case() {
     }
 
     if (res != tot_people) {
-        cout << "IMPOSSIBLE\n";
+        cout << "Impossible\n";
     } else {
         cout << pr[low] << "\n";
     }

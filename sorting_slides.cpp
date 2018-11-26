@@ -1,4 +1,4 @@
-//https://open.kattis.com/problems/risk
+//https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=2108
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -16,9 +16,9 @@ struct Dinic {
 	vector<vector<Edge> > G;
 	vector<Edge *> dad;
 	vector<int> Q;
-	
+
 	Dinic(int N) : N(N), G(N), dad(N), Q(N) {}
-	
+
 	void AddEdge(int from, int to, int cap) {
 		G[from].push_back(Edge(from, to, cap, 0, G[to].size()));
 		if (from == to) G[from].back().index++;
@@ -28,7 +28,7 @@ struct Dinic {
 	long long BlockingFlow(int s, int t) {
 		fill(dad.begin(), dad.end(), (Edge *) NULL);
 		dad[s] = &G[0][0] - 1;
-		
+
 		int head = 0, tail = 0;
 		Q[tail++] = s;
 		while (head < tail) {
@@ -69,66 +69,94 @@ struct Dinic {
 	}
 };
 
-struct Region {
-	int a;
-	vector<int> neighbors;
-	bool at_enemy;
+typedef pair<int,int> ii;
+
+bool pair_desc(ii p1, ii p2){return p1.first > p2.first;}
+
+struct slide {
+	int x_max, x_min, y_max, y_min;
+
+	bool in_slide(int x, int y) {
+		return x_min <= x && x <= x_max && y_min < y && y < y_max;
+	}
 };
 
+slide slides[10000];
 
 int main(){
 	ios_base::sync_with_stdio(false);
-	int TC;
-	cin >> TC;
-	while(TC--){
-		int N;
+	int T;
+	int N, P;
+	int c = 0;
+	while(1) {
 		cin >> N;
-		vector<Region> armies(N);
-		for(int i = 0; i < N; i++){
-			cin >> armies[i].a;
+		if (N == 0) {
+			return 0;
 		}
-		for(int i = 0; i < N; i++){
-			string s;
-			cin >> s;
-			for(int j = 0 ; j < N; j++){
-				if(s[j] == 'Y'){
-					// cout << i << " " << j << endl;
-					armies[i].at_enemy |= armies[j].a == 0;
-					if(armies[j].a != 0) 
-						armies[i].neighbors.push_back(j);
+		cout << "Heap " << ++c << endl;
+		Dinic dinic(N*2 + 2);
+		int s = 2 * N;
+		int t = s + 1;
+
+		list<ii > all_edges;
+		for (int n = 0 ; n < N; n++) {
+			cin >> slides[n].x_min;
+			cin >> slides[n].x_max;
+			cin >> slides[n].y_min;
+			cin >> slides[n].y_max;
+			all_edges.push(ii(s, n));
+			all_edges.push(ii(n+N, t));
+			dinic.AddEdge(s, n, 1);
+			dinic.AddEdge(n+N, t, 1);
+		}
+
+		int x,y;
+		for (int n = 0; n < N ; n++) {
+			cin >> x >> y;
+			for (int i = 0 ; i < N; i++) {
+				if(slides[i].in_slide(x, y)) {
+					all_edges.push(ii(i, n + N))
+					dinic.AddEdge(i, n + N, 1);
 				}
 			}
 		}
-		int i = 0, j = N * 100, mpos = 0;
-		while(i <= j){
-			int m = (i+j)/2, source = N*2, sink = source + 1;
-			int reqflow = 0;
-			Dinic graph(sink + 1);
-			for(int k = 0; k < N; k++){
-				if(armies[k].a == 0) continue;
-				if(armies[k].at_enemy){
-					// cout << "drain " << k << " to sink" << endl; 
-					graph.AddEdge(source, k, armies[k].a);
-					graph.AddEdge(k, sink, m);
-					reqflow += m;
-				} else {
-					graph.AddEdge(source, k, armies[k].a - 1);
+
+		if (dinic.GetMaxFlow(s,t) != N) {
+			cout << "none" << endl;
+			continue;
+		}
+
+
+		list<ii > matched_edges;
+		for(int m = N ; m >= 0 ; m--) {
+			for(int i = 0; i < N ; i++) {
+				for(Edge & e : dinic.G[i]) {
+					if(e.flow == 1) {
+						matched_edges.push_back(ii(i,e.to));
+					}
 				}
-				graph.AddEdge(k, k + N, armies[k].a);
-				for(int neighbor : armies[k].neighbors){
-					graph.AddEdge(k + N, neighbor, 1337);
-					// cout << "edge " << k << " " << neighbor << endl;
-				}
-			}
-			int flow = graph.GetMaxFlow(source, sink);
-			// cout << i << " " << j << " " << flow << " " << reqflow << endl;
-			if(flow >= reqflow){
-				i = m + 1;
-				mpos = max(mpos, m);
-			} else {
-				j = m - 1;
 			}
 		}
-		cout << mpos << endl;
+
+		unordered_set<ii > removed;
+		while(!matched_edges.empty())) {
+			removed.insert(matched_edges.front);
+			matched_edges.pop_front();
+			Dinic dinic(N*2 + 2);
+
+		}
+
+
+		for(int i = 0 ; i < edges.size(); i++) {
+			char slide = 'A' + edges[i].first;
+			int number = edges[i].second + 1 - N;
+			cout << "(" << slide << "," << number << ") ";
+		}
+
+
+
+		cout << endl <<endl;
 	}
+
+	return 0;
 }

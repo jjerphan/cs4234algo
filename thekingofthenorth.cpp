@@ -1,4 +1,3 @@
-//https://open.kattis.com/problems/risk
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -16,9 +15,9 @@ struct Dinic {
 	vector<vector<Edge> > G;
 	vector<Edge *> dad;
 	vector<int> Q;
-	
+
 	Dinic(int N) : N(N), G(N), dad(N), Q(N) {}
-	
+
 	void AddEdge(int from, int to, int cap) {
 		G[from].push_back(Edge(from, to, cap, 0, G[to].size()));
 		if (from == to) G[from].back().index++;
@@ -28,7 +27,7 @@ struct Dinic {
 	long long BlockingFlow(int s, int t) {
 		fill(dad.begin(), dad.end(), (Edge *) NULL);
 		dad[s] = &G[0][0] - 1;
-		
+
 		int head = 0, tail = 0;
 		Q[tail++] = s;
 		while (head < tail) {
@@ -69,66 +68,56 @@ struct Dinic {
 	}
 };
 
-struct Region {
-	int a;
-	vector<int> neighbors;
-	bool at_enemy;
-};
+int X, Y;
 
+int id(int x, int y) {
+	return y + Y * x;
+}
 
-int main(){
-	ios_base::sync_with_stdio(false);
-	int TC;
-	cin >> TC;
-	while(TC--){
-		int N;
-		cin >> N;
-		vector<Region> armies(N);
-		for(int i = 0; i < N; i++){
-			cin >> armies[i].a;
-		}
-		for(int i = 0; i < N; i++){
-			string s;
-			cin >> s;
-			for(int j = 0 ; j < N; j++){
-				if(s[j] == 'Y'){
-					// cout << i << " " << j << endl;
-					armies[i].at_enemy |= armies[j].a == 0;
-					if(armies[j].a != 0) 
-						armies[i].neighbors.push_back(j);
-				}
+int main() {
+
+	// X : rows, Y : cols
+	cin >> X >> Y;
+
+	// Vertex capacity
+	Dinic solver(2 * X * Y + 1);
+	int border = 2 * X * Y;
+
+	int cap;
+	for(int x = 0 ; x < X ; x++) {
+		for(int y = 0 ; y < Y ; y++) {
+			cin >> cap;
+			int in = id(x, y);
+			int out = in + X * Y;
+
+			solver.AddEdge(in, out, cap);
+			if (x == 0 || y == 0 || x == X - 1 || y == Y - 1) {
+				solver.AddEdge(out, border, INF);
+			}
+
+			if (x > 0) {
+				solver.AddEdge(out, id(x - 1, y), INF);
+			}
+
+			if (x < X - 1) {
+				solver.AddEdge(out, id(x + 1, y), INF);
+			}
+
+			if (y > 0) {
+				solver.AddEdge(out, id(x, y - 1), INF);
+			}
+
+			if (y < Y - 1) {
+				solver.AddEdge(out, id(x, y + 1), INF);
 			}
 		}
-		int i = 0, j = N * 100, mpos = 0;
-		while(i <= j){
-			int m = (i+j)/2, source = N*2, sink = source + 1;
-			int reqflow = 0;
-			Dinic graph(sink + 1);
-			for(int k = 0; k < N; k++){
-				if(armies[k].a == 0) continue;
-				if(armies[k].at_enemy){
-					// cout << "drain " << k << " to sink" << endl; 
-					graph.AddEdge(source, k, armies[k].a);
-					graph.AddEdge(k, sink, m);
-					reqflow += m;
-				} else {
-					graph.AddEdge(source, k, armies[k].a - 1);
-				}
-				graph.AddEdge(k, k + N, armies[k].a);
-				for(int neighbor : armies[k].neighbors){
-					graph.AddEdge(k + N, neighbor, 1337);
-					// cout << "edge " << k << " " << neighbor << endl;
-				}
-			}
-			int flow = graph.GetMaxFlow(source, sink);
-			// cout << i << " " << j << " " << flow << " " << reqflow << endl;
-			if(flow >= reqflow){
-				i = m + 1;
-				mpos = max(mpos, m);
-			} else {
-				j = m - 1;
-			}
-		}
-		cout << mpos << endl;
 	}
+
+	int a, b;
+	cin >> a >> b;
+	int castle = id(a, b);
+
+	cout << solver.GetMaxFlow(castle, border) << endl;
+
+    return 0;
 }

@@ -16,9 +16,9 @@ struct Dinic {
 	vector<vector<Edge> > G;
 	vector<Edge *> dad;
 	vector<int> Q;
-	
+
 	Dinic(int N) : N(N), G(N), dad(N), Q(N) {}
-	
+
 	void AddEdge(int from, int to, int cap) {
 		G[from].push_back(Edge(from, to, cap, 0, G[to].size()));
 		if (from == to) G[from].back().index++;
@@ -28,7 +28,7 @@ struct Dinic {
 	long long BlockingFlow(int s, int t) {
 		fill(dad.begin(), dad.end(), (Edge *) NULL);
 		dad[s] = &G[0][0] - 1;
-		
+
 		int head = 0, tail = 0;
 		Q[tail++] = s;
 		while (head < tail) {
