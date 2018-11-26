@@ -81,54 +81,45 @@ int main(){
 	int TC;
 	cin >> TC;
 	while(TC--){
-		int N;
+		int N, nfront = 0;
 		cin >> N;
-		vector<Region> armies(N);
-		for(int i = 0; i < N; i++){
-			cin >> armies[i].a;
-		}
+		vector<Region> regions(N);
+		for(int i = 0; i < N; i++)
+			cin >> regions[i].a;
 		for(int i = 0; i < N; i++){
 			string s;
 			cin >> s;
 			for(int j = 0 ; j < N; j++){
-				if(s[j] == 'Y'){
-					// cout << i << " " << j << endl;
-					armies[i].at_enemy |= armies[j].a == 0;
-					if(armies[j].a != 0) 
-						armies[i].neighbors.push_back(j);
+				if(!regions[i].a == 0 && s[j] == 'Y'){
+					if(regions[j].a != 0) {
+						regions[i].neighbors.push_back(j);
+					} else if(!regions[i].at_enemy){
+						regions[i].at_enemy = true;
+						nfront++;
+					}
 				}
 			}
 		}
-		int i = 0, j = N * 100, mpos = 0;
+		int i = 0, j = N * 100, best = 1, source = N*2, sink = source + 1;
 		while(i <= j){
-			int m = (i+j)/2, source = N*2, sink = source + 1;
-			int reqflow = 0;
+			int m = (i+j)/2;
 			Dinic graph(sink + 1);
 			for(int k = 0; k < N; k++){
-				if(armies[k].a == 0) continue;
-				if(armies[k].at_enemy){
-					// cout << "drain " << k << " to sink" << endl; 
-					graph.AddEdge(source, k, armies[k].a);
-					graph.AddEdge(k, sink, m);
-					reqflow += m;
-				} else {
-					graph.AddEdge(source, k, armies[k].a - 1);
-				}
-				graph.AddEdge(k, k + N, armies[k].a);
-				for(int neighbor : armies[k].neighbors){
+				if(regions[k].a == 0) continue;
+				if(regions[k].at_enemy)
+					graph.AddEdge(k, sink, m - 1);
+				graph.AddEdge(source, k, regions[k].a - 1);
+				graph.AddEdge(k, k + N, regions[k].a);
+				for(int neighbor : regions[k].neighbors)
 					graph.AddEdge(k + N, neighbor, 1337);
-					// cout << "edge " << k << " " << neighbor << endl;
-				}
 			}
-			int flow = graph.GetMaxFlow(source, sink);
-			// cout << i << " " << j << " " << flow << " " << reqflow << endl;
-			if(flow >= reqflow){
+			if(graph.GetMaxFlow(source, sink) == nfront * (m-1)){
 				i = m + 1;
-				mpos = max(mpos, m);
+				best = m;
 			} else {
 				j = m - 1;
 			}
 		}
-		cout << mpos << endl;
+		cout << best << endl;
 	}
 }
