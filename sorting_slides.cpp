@@ -71,14 +71,18 @@ struct Dinic {
 
 typedef pair<int,int> ii;
 
-bool pair_desc(ii p1, ii p2){return p1.first > p2.first;}
-
 struct slide {
 	int x_max, x_min, y_max, y_min;
 
 	bool in_slide(int x, int y) {
 		return x_min <= x && x <= x_max && y_min < y && y < y_max;
 	}
+};
+
+struct pair_hash {
+    inline std::size_t operator()(const ii & v) const {
+        return v.first*31+v.second;
+    }
 };
 
 slide slides[10000];
@@ -104,10 +108,10 @@ int main(){
 			cin >> slides[n].x_max;
 			cin >> slides[n].y_min;
 			cin >> slides[n].y_max;
-			all_edges.push(ii(s, n));
-			all_edges.push(ii(n+N, t));
+			all_edges.push_back(ii(s, n));
+			all_edges.push_back(ii(n + N, t));
 			dinic.AddEdge(s, n, 1);
-			dinic.AddEdge(n+N, t, 1);
+			dinic.AddEdge(n + N, t, 1);
 		}
 
 		int x,y;
@@ -115,45 +119,60 @@ int main(){
 			cin >> x >> y;
 			for (int i = 0 ; i < N; i++) {
 				if(slides[i].in_slide(x, y)) {
-					all_edges.push(ii(i, n + N))
+					all_edges.push_back(ii(i, n + N));
 					dinic.AddEdge(i, n + N, 1);
 				}
 			}
 		}
 
-		if (dinic.GetMaxFlow(s,t) != N) {
+		int maxflow = dinic.GetMaxFlow(s,t);
+		if (maxflow != N) {
 			cout << "none" << endl;
 			continue;
 		}
 
 
 		list<ii > matched_edges;
-		for(int m = N ; m >= 0 ; m--) {
-			for(int i = 0; i < N ; i++) {
-				for(Edge & e : dinic.G[i]) {
-					if(e.flow == 1) {
-						matched_edges.push_back(ii(i,e.to));
-					}
+		for(int i = 0; i < N ; i++) {
+			for(Edge & e : dinic.G[i]) {
+				if(e.flow == 1) {
+					matched_edges.push_back(ii(i,e.to));
 				}
 			}
 		}
 
-		unordered_set<ii > removed;
-		while(!matched_edges.empty())) {
-			removed.insert(matched_edges.front);
+		unordered_set<ii, pair_hash > removed;
+		// Removing edges one by one
+		int m = maxflow;
+		while(!matched_edges.empty()) {
+			m--;
+			removed.insert(matched_edges.front());
 			matched_edges.pop_front();
 			Dinic dinic(N*2 + 2);
-
+			int s = 2 * N;
+			int t = s + 1;
+			for(ii& p : all_edges) {
+				if(removed.find(p) == removed.end()) {
+					dinic.AddEdge(p.first, p.second, 1);
+				}
+			}
+			int yolo = dinic.GetMaxFlow(s, t);
+			cout << "yolo " << yolo << endl;
+			cout << "m " << m << endl;
+			if (yolo != m) {
+				break;
+			}
 		}
 
-
-		for(int i = 0 ; i < edges.size(); i++) {
-			char slide = 'A' + edges[i].first;
-			int number = edges[i].second + 1 - N;
-			cout << "(" << slide << "," << number << ") ";
+		if(m != 0) {
+			cout << "none";
+		} else {
+			for(ii & p : matched_edges) {
+				char slide = 'A' + p.first;
+				int number = p.second + 1 - N;
+				cout << "(" << slide << "," << number << ") ";
+			}
 		}
-
-
 
 		cout << endl <<endl;
 	}
