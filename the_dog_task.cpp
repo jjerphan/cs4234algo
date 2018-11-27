@@ -1,4 +1,3 @@
-//https://open.kattis.com/problems/risk
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -69,57 +68,64 @@ struct Dinic {
 	}
 };
 
-struct Region {
-	int a;
-	vector<int> neighbors;
-	bool at_enemy = false;
+struct pos {
+	int x, y;
 };
 
+float dist(pos a, pos b) {
+	int d_x = a.x - b.x;
+	int d_y = a.y - b.y;
+	return sqrt(d_x * d_x + d_y * d_y);
+}
 
-int main(){
-	ios_base::sync_with_stdio(false);
-	int TC;
-	cin >> TC;
-	while(TC--){
-		int N, nfront = 0;
-		cin >> N;
-		vector<Region> regions(N);
-		for(int i = 0; i < N; i++)
-			cin >> regions[i].a;
-		for(int i = 0; i < N; i++){
-			string s;
-			cin >> s;
-			for(int j = 0 ; j < N; j++){
-				if(!regions[i].a == 0 && s[j] == 'Y'){
-					if(regions[j].a != 0) {
-						regions[i].neighbors.push_back(j);
-					} else if(!regions[i].at_enemy){
-						regions[i].at_enemy = true;
-						nfront++;
-					}
-				}
-			}
-		}
-		int i = 0, j = N * 100, best = 1, source = N*2, sink = source + 1;
-		while(i <= j){
-			int m = (i+j)/2;
-			Dinic graph(sink + 1);
-			for(int k = 0; k < N; k++){
-				if(regions[k].a == 0) continue;
-				if(regions[k].at_enemy)
-					graph.AddEdge(k, sink, m - 1);
-				graph.AddEdge(source, k, regions[k].a - 1);
-				graph.AddEdge(k, k + N, regions[k].a);
-				for(int neighbor : regions[k].neighbors)
-					graph.AddEdge(k + N, neighbor, 1337);
-			}
-			if(graph.GetMaxFlow(source, sink) == nfront * (m-1)){
-				i = m + 1;
-				best = m;
-			} else {
-				j = m - 1;
-			}
-		}
-		cout << best << endl;
+pos routes[101];
+pos places[101];
+
+void resolve_case() {
+    int N, M;
+
+    cin >> N >> M;
+	Dinic solver(N + M + 2);
+    int source = N + M;
+    int target = N + M + 1;
+
+	for(int i = 0; i < N ; i++) {
+		cin >> routes[i].x >> routes[i].y;
+		solver.AddEdge(source, i, 1);
 	}
+
+	for(int i = 0; i < M ; i++) {
+		cin >> places[i].x >> places[i].y;
+		solver.AddEdge(i + N, target, 1);
+	}
+
+    // Linking rides if it's possible
+    for (int i = 0; i < N-1 ; i++) {
+        for (int j = 0 ; j < M ; j++) {
+			int route_length = dist(routes[i], routes[i+1]);
+			int detour = dist(routes[i], places[j]) + dist(places[j], routes[i+1]);
+            if (detour < 2 * route_length) {
+				solver.AddEdge(i, j + N, 1);
+		    }
+    	}
+    }
+
+    cout << N + solver.GetMaxFlow(source, target) << "\n";
+
+	for(int i = 0 ; i < N ; i++) {
+		cout << routes[i].x << " " << routes[i].y << " ";
+		for(Edge & e : solver.G[i]) {
+			if (e.flow == 1) {
+				cout << places[e.to - N].x << " " << places[e.to - N].y << " ";
+			}
+		}
+	}
+	cout << endl <<  endl;
+}
+
+int main() {
+    int T;
+    cin >> T;
+    for (int t = 0 ; t < T; t++) resolve_case();
+    return 0;
 }

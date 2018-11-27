@@ -165,7 +165,15 @@ For outputting an assignment i have tried the following heuristic (failed - Wron
 
 ## The dog task
 
-**Idea**: see tutorial
+### Type: MCBM
+
+**Idea**:
+
+Connect node `i` in route to place `j` if:
+```
+d(i,j) + d(j, i + 1) < 2 * d(i, i + 1)
+```
+Run MCMBM, print routes and places (if matching) in the order.
 
 ------------------------
 
